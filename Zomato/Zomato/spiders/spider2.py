@@ -6,6 +6,7 @@ Created on Fri Jun 19 12:43:10 2020
 """
 import scrapy
 from ..items import ZomatoItem
+import re
 
 class ZomSpideySpider(scrapy.Spider):
     name = 'zom_spidey_'
@@ -50,12 +51,8 @@ class ZomSpideySpider(scrapy.Spider):
         
     def third_parser(self, response):
         items = response.meta["items"]
-        sec = response.css(".sc-1mo3ldo-0.sc-drKuOJ.kWoWrj")
-        sec2 = sec.css(".sc-gRnDUn.gvMLYP")
-        sec3 = response.xpath('//section[not(@*)]')
-        sec4 = sec3.css('a.sc-dCaJBF.gOpviG').css("::text").extract()
         number_of_reviews = response.css(".lhdg1m-6.gcPmsM").css("::text").extract()
-        items['dining_reviews'] = number_of_reviews[0]
-        items['delivery_reviews'] = number_of_reviews[1]
-        print("sec\n\n\n\n", number_of_reviews)
+        number_of_reviews[0] = number_of_reviews[0].replace(",", "")
+        items['dining_reviews'] = re.findall("\d+", number_of_reviews[0])
+        items['delivery_reviews'] = re.findall("\d+", number_of_reviews[1])
         yield items
