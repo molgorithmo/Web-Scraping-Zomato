@@ -39,6 +39,10 @@ class ZomSpideySpider(scrapy.Spider):
                 items['cuisine'] = d.css(".col-s-11.col-m-12.nowrap.pl0").css("::text").extract()
                 items['cost_for_two'] = d.css(".res-cost .pl0").css("::text").extract()
             link = c.css(".item.result-menu").css("::attr('href')").get()
+            if link is not None:
+                items['has_menu_available'] = 1
+            else:
+                items['has_menu_available'] = 0
             order_link = c.css(".result-menu+ a").css("::attr('href')").get()
             if order_link is None:
                 items['can_order_via_zomato'] = "No"
@@ -60,5 +64,4 @@ class ZomSpideySpider(scrapy.Spider):
             items['rest_type'] = rest_type[0]
         else:
             items['rest_type'] = null
-        print("Type\n\n\n",rest_type[0])
         yield items
