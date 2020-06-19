@@ -21,3 +21,4 @@ class ZomatoItem(scrapy.Item):
     res_link = scrapy.Field()
     dining_reviews = scrapy.Field()
     delivery_reviews = scrapy.Field()
+    rest_type = scrapy.Field()

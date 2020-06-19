@@ -55,4 +55,10 @@ class ZomSpideySpider(scrapy.Spider):
         number_of_reviews[0] = number_of_reviews[0].replace(",", "")
         items['dining_reviews'] = re.findall("\d+", number_of_reviews[0])
         items['delivery_reviews'] = re.findall("\d+", number_of_reviews[1])
+        rest_type = response.css(".bULMfr").css("::text").extract()
+        if rest_type is not None:
+            items['rest_type'] = rest_type[0]
+        else:
+            items['rest_type'] = null
+        print("Type\n\n\n",rest_type[0])
         yield items
