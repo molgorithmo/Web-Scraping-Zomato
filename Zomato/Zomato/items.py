@@ -9,7 +9,6 @@ import scrapy
 
 
 class ZomatoItem(scrapy.Item):
-    # define the fields for your item here like:
     rest_name = scrapy.Field()
     rating = scrapy.Field()
     area = scrapy.Field()
@@ -27,3 +26,5 @@ class ZomatoItem(scrapy.Item):
     featured_in = scrapy.Field()
     discount = scrapy.Field()
     min_amnt_for_discount = scrapy.Field()
+    reviews = scrapy.Field()
+    review_rating = scrapy.Field()

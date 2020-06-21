@@ -11,14 +11,14 @@ import re
 class ZomSpideySpider(scrapy.Spider):
     name = 'zom_spidey_'
     allowed_domains = ['zomato.com']
-    start_urls = ['https://www.zomato.com/mumbai/restaurants', 'https://www.zomato.com/ncr/restaurants']
+    start_urls = ['https://www.zomato.com/mumbai/restaurants', 'https://www.zomato.com/ncr/restaurants','https://www.zomato.com/bangalore/restaurants']
     page_num = 0
     res_link= ''
     def parse(self, response):
         for url in self.start_urls:
             for item in self.second_parser(response):
                 yield item
-            if self.page_num < 100:
+            if self.page_num < 200:
                 self.page_num+=1
                 next_url = url+"?page="+str(self.page_num)
                 if next_url is not None:
@@ -64,6 +64,7 @@ class ZomSpideySpider(scrapy.Spider):
                 yield request
         
     def third_parser(self, response):
+        url = response.url
         items = response.meta["items"]
         number_of_reviews = response.css(".lhdg1m-6.gcPmsM").css("::text").extract()
         number_of_reviews[0] = number_of_reviews[0].replace(",", "")
@@ -74,4 +75,19 @@ class ZomSpideySpider(scrapy.Spider):
             items['rest_type'] = rest_type[0]
         else:
             items['rest_type'] = None
-        yield items
+        review_url = url+"/reviews"
+        if review_url is not None:
+            request = scrapy.Request(review_url, callback=self.fourth_parser)
+            request.meta['items'] = items
+            yield request
+            
+    def fourth_parser(self, response):
+         items = response.meta["items"]
+         review_rating = response.css('.llNhvf').css("::text").extract()
+         items['review_rating'] = review_rating
+         p = response.css('.koPuph').css("::text").extract()
+         rev = []
+         for para in p:
+             rev.append(para)
+         items['reviews'] = rev 
+         yield items
